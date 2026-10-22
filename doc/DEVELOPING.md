@@ -248,7 +248,7 @@ scrolling back through history. Repeat in the Home Screen web app using the
 normal trusted HTTPS preview setup. An HTTP LAN preview is useful for Safari
 checks but does not prove installed-app behavior. For an API-free first check,
 Storybook's **Task chat / Mobile streaming follow / Streaming** story uses the
-production editor, composer dock and document auto-follow with synthetic output.
+production editor, composer footer and message scroller with synthetic output.
 
 The vite dev server serves an unbundled module graph. This is fast to reload on a local machine but too heavy for phones and tablets on slow links (airplane wifi, mobile data, distant tailnet peers). `pnpm dev:mobile` builds the UI once and serves the small production bundle on port `3101` via `vite preview`, proxying `/api` requests to the dev API on `3100`.
 

@@ -59,13 +59,20 @@ reversals and Safari's edge bounce. It glides out and eases back in with shared
 motion tokens; the task composer follows the same motion. Keep page padding
 stable while the navigation moves, and honor reduced-motion preferences.
 
-While a text field is focused, native caret scrolling must not toggle mobile
-navigation or compete with task auto-follow. A mobile task composer's keyboard
-position follows the unzoomed visual viewport without bottom-offset animation;
-its editor height is capped against that visible space. Closing the keyboard
-restores the normal navigation/safe-area offset. Verify this on a physical iPhone
+Mobile task conversations use a fixed page shell, one scrollable message area,
+and a normal flex footer for the composer. The visible viewport changes the
+shell's height only; never translate the shell with keyboard panning. Navigation
+stays at the bottom of the layout viewport, where the keyboard can cover it;
+do not lift it above the keyboard or explicitly hide it. The
+editor height is capped against that visible space. Verify this on a physical iPhone
 in both Safari and the installed web app; desktop viewport emulation does not
 exercise iOS keyboard panning.
+
+Safari can apply a stale document focus scroll after the keyboard resize. Reject
+that root scroll only for an unzoomed, keyboard-open conversation. Inner message
+and editor scrolling remain native. Viewport sizing listens to resize events,
+not message or input updates; following the bottom must not measure historical
+rows on every streamed update.
 
 Task conversations reveal their initial comments, interaction cards, plan, and
 relevant run history together after positioning the latest message. Keep the

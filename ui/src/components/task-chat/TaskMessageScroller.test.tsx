@@ -208,6 +208,42 @@ describe("TaskMessageScroller", () => {
     expect(scroller().scrollTop).toBe(150);
   });
 
+  it("restores bottom-follow on Back after the viewport and message heights change", () => {
+    const configured = new WeakSet<HTMLElement>();
+    function mount(restore: boolean, scrollHeight: number, clientHeight: number) {
+      flushSync(() => root.render(
+        <TaskChatScrollNavigation.Provider value={{ key: "rotated-bottom-entry", hash: "", restore }}>
+          <TaskMessageScroller contentKey={scrollHeight}>
+            <div ref={(node) => {
+              const viewport = node?.parentElement;
+              if (viewport && !configured.has(viewport)) {
+                fakeGeometry(viewport, { scrollHeight, clientHeight });
+                let top = 0;
+                Object.defineProperty(viewport, "scrollTop", {
+                  configurable: true,
+                  get: () => top,
+                  set: (value: number) => {
+                    top = Math.max(0, Math.min(value, viewport.scrollHeight - viewport.clientHeight));
+                  },
+                });
+                configured.add(viewport);
+              }
+            }}>Latest response</div>
+          </TaskMessageScroller>
+        </TaskChatScrollNavigation.Provider>,
+      ));
+    }
+    mount(false, 1000, 400);
+    flushSync(() => root.render(null));
+    // Rotation changed wrapping and the available message viewport while away.
+    mount(true, 2000, 500);
+    expect(scroller().scrollTop).toBe(1500);
+    expect(pill()).toBeNull();
+    Object.defineProperty(scroller(), "scrollHeight", { value: 2400, configurable: true });
+    mount(true, 2400, 500);
+    expect(scroller().scrollTop).toBe(1900);
+  });
+
   it("renders children inside the scroll container, pill hidden, scrolled to bottom on mount", () => {
     render();
     const el = scroller();

@@ -126,7 +126,7 @@ export function TaskMessageScroller({ children, contentKey, className }: TaskMes
       const rect = el.getBoundingClientRect();
       anchorRef.current = readThreadScrollAnchor(el, rect.top, rect.bottom);
     }
-    if (initialPositionApplied.current) navigation.remember(el.scrollTop, anchorRef.current);
+    if (initialPositionApplied.current) navigation.remember(el.scrollTop, anchorRef.current, pinnedRef.current);
   }, [navigation.key, navigation.hash, navigation.ready]);
 
   const reconcileContent = useCallback(() => {

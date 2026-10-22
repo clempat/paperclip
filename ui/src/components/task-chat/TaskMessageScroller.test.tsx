@@ -125,6 +125,36 @@ describe("TaskMessageScroller", () => {
     vi.unstubAllGlobals();
   });
 
+  it("does not measure historical rows on each streaming update while following the bottom", () => {
+    let initialized = false;
+    let rowMeasurements = 0;
+    const update = (tick: number) => flushSync(() => root.render(
+      <TaskMessageScroller contentKey={tick}>
+        <div ref={(node) => {
+          if (node && !initialized) {
+            fakeGeometry(node.parentElement!, { scrollHeight: 20000, clientHeight: 400 });
+            initialized = true;
+          }
+        }}>
+          {Array.from({ length: 200 }, (_, index) => <div key={index} data-thread-anchor={`history-${index}`} ref={(node) => {
+            if (node) node.getBoundingClientRect = () => {
+              rowMeasurements++;
+              const top = index * 100 - scroller().scrollTop;
+              return { top, bottom: top + 100, height: 100 } as DOMRect;
+            };
+          }}>History {index}</div>)}
+          <p>Live response {tick}</p>
+        </div>
+      </TaskMessageScroller>,
+    ));
+    update(0);
+    rowMeasurements = 0;
+    for (let tick = 1; tick <= 30; tick++) update(tick);
+    expect(container.textContent).toContain("Live response 30");
+    expect(scroller().scrollTop).toBe(20000);
+    expect(rowMeasurements).toBe(0);
+  });
+
   it("applies same-task hash changes and restores each history entry without remounting", async () => {
     let initialized = false;
     function navigate(key: string, hash: string, restore = false) {

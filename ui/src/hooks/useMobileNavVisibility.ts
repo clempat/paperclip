@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { MobileNavScrollTracker } from "../lib/mobile-nav-scroll";
-import { isKeyboardShortcutTextInputTarget } from "../lib/keyboardShortcuts";
 
 export function useMobileNavVisibility(enabled: boolean, pathname: string): boolean {
   const [visible, setVisible] = useState(true);
@@ -31,7 +30,7 @@ export function useMobileNavVisibility(enabled: boolean, pathname: string): bool
         frame = null;
         const { top, max } = scrollBounds();
         const previous = tracker.visible;
-        const next = tracker.update(top, max, isKeyboardShortcutTextInputTarget(document.activeElement));
+        const next = tracker.update(top, max);
         if (next !== previous) setVisible(next);
       });
     };

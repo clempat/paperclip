@@ -6,14 +6,6 @@ function tracker(top = 0) {
 }
 
 describe("mobile navigation scroll response", () => {
-  it("ignores caret movement while editing without accumulating it as a later swipe", () => {
-    const nav = tracker(100);
-    expect(nav.update(200, 1000, true)).toBe(true);
-    expect(nav.update(400, 1000, true)).toBe(true);
-    expect(nav.update(401, 1000)).toBe(true);
-    expect(nav.update(432, 1000)).toBe(false);
-    expect(nav.update(0, 1000, true)).toBe(false);
-  });
   it("hides after deliberate downward movement, including slow scrolling", () => {
     const nav = tracker(100);
     for (let top = 101; top < 132; top++) expect(nav.update(top, 1000)).toBe(true);

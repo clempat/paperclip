@@ -16,21 +16,13 @@ export class MobileNavScrollTracker {
     private lastMaxTop: number,
   ) {}
 
-  update(scrollTop: number, maxTop: number, editing = false): boolean {
+  update(scrollTop: number, maxTop: number): boolean {
     // Safari rubber-banding must not count as a change in scroll direction.
     const top = Math.max(0, Math.min(scrollTop, maxTop));
     const delta = top - Math.max(this.lastTop, this.options.topZone);
     const boundsChanged = maxTop !== this.lastMaxTop;
     this.lastTop = top;
     this.lastMaxTop = maxTop;
-
-    // Track the position, but do not interpret native caret scrolling as a
-    // swipe or accumulate it into the first gesture after editing.
-    if (editing) {
-      this.direction = 0;
-      this.distance = 0;
-      return this.visible;
-    }
 
     if (top <= this.options.topZone) {
       this.visible = true;

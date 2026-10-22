@@ -56,23 +56,12 @@ title sizes remain larger.
 
 The bottom navigation responds to accumulated scrolling, ignoring small
 reversals and Safari's edge bounce. It glides out and eases back in with shared
-motion tokens; the task composer follows the same motion. Keep page padding
-stable while the navigation moves, and honor reduced-motion preferences.
+motion tokens. Keep page padding stable while the navigation moves, and honor
+reduced-motion preferences.
 
-Mobile task conversations use a fixed page shell, one scrollable message area,
-and a normal flex footer for the composer. The visible viewport changes the
-shell's height only; never translate the shell with keyboard panning. Navigation
-stays at the bottom of the layout viewport, where the keyboard can cover it;
-do not lift it above the keyboard or explicitly hide it. The
-editor height is capped against that visible space. Verify this on a physical iPhone
-in both Safari and the installed web app; desktop viewport emulation does not
-exercise iOS keyboard panning.
-
-Safari can apply a stale document focus scroll after the keyboard resize. Reject
-that root scroll only for an unzoomed, keyboard-open conversation. Inner message
-and editor scrolling remain native. Viewport sizing listens to resize events,
-not message or input updates; following the bottom must not measure historical
-rows on every streamed update.
+Mobile task conversations size their shell to the visible viewport, with one
+message scroller and a normal flex footer for the composer. Navigation stays at
+the layout viewport bottom, behind the keyboard.
 
 Task conversations reveal their initial comments, interaction cards, plan, and
 relevant run history together after positioning the latest message. Keep the

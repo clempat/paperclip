@@ -1,6 +1,7 @@
 import { readThreadScrollAnchor, threadScrollAnchorDelta, type ThreadScrollAnchor } from "./scroll-anchor";
 import { useEffect, useLayoutEffect, useRef } from "react";
 import { useTaskChatScrollNavigation } from "./scroll-navigation";
+import { isKeyboardShortcutTextInputTarget } from "@/lib/keyboardShortcuts";
 
 const PIN_THRESHOLD_PX = 48;
 
@@ -44,6 +45,9 @@ export function useWindowAutoFollow(contentKey: unknown, enabled: boolean): void
     if (initialPositionApplied.current) navigation.remember(window.scrollY, anchorRef.current);
   };
   const reconcile = () => {
+    // iOS pans the document to keep the caret visible. Following output (or
+    // compensating a reading anchor) at the same time fights that native scroll.
+    if (isKeyboardShortcutTextInputTarget(document.activeElement)) return;
     if (pinnedRef.current) scrollWindowToBottom();
     else {
       const root = document.querySelector('[data-testid="task-chat-thread"]');
@@ -58,6 +62,8 @@ export function useWindowAutoFollow(contentKey: unknown, enabled: boolean): void
   useEffect(() => {
     if (!enabled) return;
     const onScroll = () => {
+      // Still remember scrolling during editing, so reading older messages
+      // with the keyboard open does not resume follow mode on blur.
       // Content or viewport growth can leave a gap below the old bottom before
       // ResizeObserver runs. Only an upward scroll gives up existing follow
       // intent; a scroll event at the same position must not strand the output.

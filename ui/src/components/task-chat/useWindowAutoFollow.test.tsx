@@ -8,7 +8,7 @@ import { TaskChatScrollNavigation } from "./scroll-navigation";
 
 function Host({ contentKey, enabled }: { contentKey: unknown; enabled: boolean }) {
   useWindowAutoFollow(contentKey, enabled);
-  return <div data-testid="task-chat-thread">thread</div>;
+  return <div data-testid="task-chat-thread">thread<textarea aria-label="Reply" /></div>;
 }
 
 /**
@@ -258,6 +258,37 @@ describe("useWindowAutoFollow", () => {
     render(0, false);
     expect(scrollToCalls).toHaveLength(0);
     render(1, false);
+    expect(scrollToCalls).toHaveLength(0);
+  });
+
+  it("leaves caret scrolling to the browser while editing, then resumes following", async () => {
+    const geometry = fakeWindowGeometry();
+    render(0);
+    container.querySelector("textarea")!.focus();
+    // Safari pans the page to reveal the caret as the keyboard opens.
+    await scrollWindowTo(1300);
+    scrollToCalls = [];
+    geometry.setScrollHeight(2300);
+    render(1);
+    window.dispatchEvent(new Event("resize"));
+    expect(window.scrollY).toBe(1300);
+    expect(scrollToCalls).toHaveLength(0);
+
+    container.querySelector("textarea")!.blur();
+    render(2);
+    expect(window.scrollY).toBe(1500);
+  });
+
+  it("keeps a deliberate history scroll made while editing after blur and new output", async () => {
+    const geometry = fakeWindowGeometry();
+    render(0);
+    container.querySelector("textarea")!.focus();
+    await scrollWindowTo(400);
+    container.querySelector("textarea")!.blur();
+    scrollToCalls = [];
+    geometry.setScrollHeight(2300);
+    render(1);
+    expect(window.scrollY).toBe(400);
     expect(scrollToCalls).toHaveLength(0);
   });
 });

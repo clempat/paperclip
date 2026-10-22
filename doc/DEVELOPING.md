@@ -235,6 +235,21 @@ Issue execution may also use project execution workspace policies and workspace 
 
 ### Mobile-friendly preview (`pnpm dev:mobile`)
 
+For physical iPhone keyboard checks, connect the phone and Mac to the same Wi-Fi.
+Connect USB and trust the Mac, enable **Settings → Apps → Safari → Advanced →
+Web Inspector** on the phone, and enable web developer features in Safari's
+Advanced settings on the Mac. Open the Mac's LAN preview URL on the phone;
+Safari's **Develop → [iPhone] → [page]** menu opens its remote inspector. USB
+provides inspection, not a `localhost` tunnel: use the Mac's LAN address.
+
+Test a short draft, multiline growth/deletion, caret edits in the middle, live
+output arriving during editing, keyboard dismissal/reopening, rotation, and
+scrolling back through history. Repeat in the Home Screen web app using the
+normal trusted HTTPS preview setup. An HTTP LAN preview is useful for Safari
+checks but does not prove installed-app behavior. For an API-free first check,
+Storybook's **Task chat / Mobile streaming follow / Streaming** story uses the
+production editor, composer dock and document auto-follow with synthetic output.
+
 The vite dev server serves an unbundled module graph. This is fast to reload on a local machine but too heavy for phones and tablets on slow links (airplane wifi, mobile data, distant tailnet peers). `pnpm dev:mobile` builds the UI once and serves the small production bundle on port `3101` via `vite preview`, proxying `/api` requests to the dev API on `3100`.
 
 - `pnpm dev:mobile` — build the UI and start the preview server on `:3101`. Rebuild manually to pick up UI source changes.
